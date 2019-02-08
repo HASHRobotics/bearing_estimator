@@ -1,0 +1,9 @@
+<launch>
+    <arg name="camera" />
+    <arg name="pan" />
+
+    <node pkg="bearing_estimator" type="bearing_estimator.cpp" name="bearing_estimator">
+        <param name="camera" value="$(arg camera)"/>
+        <param name="pan" value="$(arg pan)"/>
+    </node>
+</launch>
