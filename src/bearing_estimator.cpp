@@ -2,14 +2,14 @@
 #include "std_msgs/String.h"
 
 
-void imageSubscriber(const std_msgs::String::ConstPtr)
+void imageSubscriber(const std_msgs::String::ConstPtr& msg)
 {
-	ROS_INFO("Subscribed to the node: [%s]", msg->data.c_str);
+	//ROS_INFO("Subscribed to the node: [%s]", msg->);
 }
 
-void panSubscriber(const std_msgs::String::ConstPtr)
+void panSubscriber(const std_msgs::String::ConstPtr& msg)
 {
-	ROS_INFO("Subscribed to the node [%s]", msg->data.c_str);
+	//ROS_INFO("Subscribed to the node [%s]", msg->data.c_str);
 }
 
 int main(int argc, char **argv)
@@ -19,6 +19,8 @@ int main(int argc, char **argv)
 	// Parameters
 	ros::NodeHandle n_param;
 
+	std::string camera_topic_name;
+	std::string pan_topic_name;
 	n_param.param<std::string>("camera", camera_topic_name);
 	n_param.param<std::string>("pan", pan_topic_name); 
 
