@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(bearing-estimator)
+project(bearing_estimator)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -7,6 +7,10 @@ project(bearing-estimator)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
+
+set(OpenCV_DIR /usr/local/share/OpenCV/)
+
+
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
@@ -107,7 +111,7 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES bearing-estimator
+#  LIBRARIES bearing_estimator
   CATKIN_DEPENDS roscpp rospy std_msgs sensor_msgs 
 #  DEPENDS system_lib
 )
@@ -124,9 +128,11 @@ include_directories(
   ${OpenCV_INCLUDE_DIRS}
 )
 
+
+
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/bearing-estimator.cpp
+#   src/${PROJECT_NAME}/bearing_estimator.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -137,7 +143,9 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME} src/bearing_estimator.cpp)
+#add_executable(${PROJECT_NAME} src/bearing_estimator.cpp)
+#add_executable(${PROJECT_NAME} src/bearing_estimator.py)
+
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -150,7 +158,9 @@ add_executable(${PROJECT_NAME} src/bearing_estimator.cpp)
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+#target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} 
+#${OpenCV_LIBS} ${OpenCV_LIBRARIES})
+#
 
 #############
 ## Install ##
@@ -192,7 +202,7 @@ target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_bearing-estimator.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_bearing_estimator.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
