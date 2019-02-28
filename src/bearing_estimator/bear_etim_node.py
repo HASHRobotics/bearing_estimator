@@ -7,6 +7,7 @@ import cv2
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
 import numpy as np
+from bearing_estimator.msg import bearing_msg
 
 
 import sys
@@ -22,8 +23,11 @@ class Bearing_Estimator():
         # camera = rospy.get_param('camera', default_camera)
         # pan = rospy.get_param('pan')
         self.bridge = CvBridge()
-        self.image_sub = rospy.Subscriber("/camera/color/image_raw", Image, self.detector)
+        self.image_sub = rospy.Subscriber("/camera/color/image_raw", Image, self.bearing_calculator)
+        self.bearing_pub = rospy.Publisher('bearing_etimated', bearing_msg, queue_size=10)
+        # self.hebi_angle = rospy.Subscriber("/camera/color/image_raw", Image, self.detector)
 
+        self.hebi_angle = 0
     # def _image_callback(self, sensor_msgs::ImageConstPtr& msg):
     #     self._img_msg = msg
 
@@ -53,7 +57,7 @@ class Bearing_Estimator():
         # cv2.imwrite('output2.jpg', frame_threshed)
         img = cv2.cvtColor(img, cv2.COLOR_HSV2BGR)
         output = cv2.bitwise_and(img, img, mask=frame_threshed)
-        cv2.imshow("images", np.hstack([img, output]))
+        # cv2.imshow("images", np.hstack([img, output]))
 
         # For real-sense
         kernel = np.ones((5, 5), np.uint8)
@@ -65,33 +69,50 @@ class Bearing_Estimator():
         if (len(contours) == 0):
             stro = "No contour detected for image " + "lllllllllllll"
             print(stro)
+            cX,cY,w,h =  0,0,0,0
 
-        c = max(contours, key=cv2.contourArea)
-        if cv2.contourArea(c) < 28:
-            stro = "Detected contour too small"
-
-        x, y, w, h = cv2.boundingRect(c)
-        # draw the book contour (in green)
-        cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
-
-        M = cv2.moments(c)
-
-        # calculate x,y coordinate of center
-        if M["m00"] != 0:
-            print "centroid detected"
-            cX = int(M["m10"] / M["m00"])
-            cY = int(M["m01"] / M["m00"])
         else:
-            print "centroid not detected"
-            stro = "No centroid detected for image " + str(sys.argv[1])
-            print(stro)
-        cX, cY = 0, 0
+	        c = max(contours, key=cv2.contourArea)
+	        if cv2.contourArea(c) < 28:
+	            stro = "Detected contour too small"
+	            
+	        x, y, w, h = cv2.boundingRect(c)
+	        # draw the book contour (in green)
+	        cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+	        M = cv2.moments(c)
+
+	        # calculate x,y coordinate of center
+	        if M["m00"] != 0:
+	            print "centroid detected"
+	            cX = int(M["m10"] / M["m00"])
+	            cY = int(M["m01"] / M["m00"])
+	        else:
+	            print "centroid not detected"
+	            # stro = "No centroid detected for image " + str(sys.argv[1])
+	            # print(stro)
+                cX, cY = 0, 0
+        return cX,cY,w,h
 
 
 
-    def bearing_calculator(self, x_location,y_location,height_image, width_image):
+    def bearing_calculator(self,msg):
+    	x_location,y_location,height_image, width_image = self.detector(msg)
+    	if (x_location== 0 or y_location == 0):
+            centroid_x = x_location
+            centroid_y = y_location
+            msg_out = bearing_msg()
+            f = 607.0
+            center_x = 600 #x cordinate of camera center
+            offset = 0
+            angle_rad = -(np.arctan(-((centroid_x-center_x)/f)) + self.hebi_angle - offset)
+            angle_deg = np.rad2deg(angle_rad)
+            msg_out.header.stamp = rospy.Time.now()
+            msg_out.bearing = angle_deg
+            print "lolololololololololol"
+            self.bearing_pub.publish(msg_out)
 
-        pass
+        
 
 if __name__ == '__main__':
     try:

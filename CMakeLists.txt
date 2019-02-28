@@ -15,9 +15,11 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  message_generation
   sensor_msgs
   OpenCV
 )
+
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -53,11 +55,12 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
+add_message_files(
+  FILES
+  some_msg.msg
+)
 #   Message2.msg
-# )
+
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -79,6 +82,8 @@ generate_messages(
   std_msgs
   sensor_msgs
 )
+
+
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -112,7 +117,7 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES bearing_estimator
-  CATKIN_DEPENDS roscpp rospy std_msgs sensor_msgs 
+  CATKIN_DEPENDS roscpp rospy std_msgs sensor_msgs message_runtime
 #  DEPENDS system_lib
 )
 
@@ -155,6 +160,7 @@ include_directories(
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
+
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
