@@ -9,7 +9,6 @@ from sensor_msgs.msg import Image
 import numpy as np
 from bearing_estimator.msg import bearing_msg
 
-
 import sys
 
 
@@ -23,7 +22,7 @@ class Bearing_Estimator():
         # camera = rospy.get_param('camera', default_camera)
         # pan = rospy.get_param('pan')
         self.bridge = CvBridge()
-        self.image_sub = rospy.Subscriber("/camera/color/image_raw", Image, self.bearing_calculator)
+        self.image_sub = rospy.Subscriber("/camera/image_raw", Image, self.bearing_calculator)
         self.bearing_pub = rospy.Publisher('bearing_etimated', bearing_msg, queue_size=10)
         # self.hebi_angle = rospy.Subscriber("/camera/color/image_raw", Image, self.detector)
 
@@ -109,7 +108,7 @@ class Bearing_Estimator():
             angle_deg = np.rad2deg(angle_rad)
             msg_out.header.stamp = rospy.Time.now()
             msg_out.bearing = angle_deg
-            print "lolololololololololol"
+
             self.bearing_pub.publish(msg_out)
 
         
