@@ -11,8 +11,6 @@ from bearing_estimator.msg import bearing_msg
 
 import sys
 
-
-
 class Bearing_Estimator():
 
     def __init__(self):
