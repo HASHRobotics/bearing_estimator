@@ -7,7 +7,7 @@ from sensor_msgs.msg import Range
 
 from collections import deque
 
-from bearing_estimator.srv import get_range
+from bearing_estimator.srv import get_range, get_rangeResponse
 
 class RangeEstimator:
     def __init__(self):
@@ -63,11 +63,13 @@ class RangeEstimator:
         # Include CV bearing calculations
         print("Caluclating Range")
         ret = get_rangeResponse()
+        current_range = Range()
         if self.distance == None:
             ret.detected = False
         else:
             ret.detected = True
-        ret.range = self.distance
+        current_range.range = self.distance
+        ret.range = current_range
         return ret
 
 
