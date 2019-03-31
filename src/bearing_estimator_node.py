@@ -6,6 +6,7 @@ import cv2
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
 from bearing_estimator.srv import estimate_bearing
+import numpy as np
 
 class BearingEstimator:
     def __init__(self):
@@ -29,7 +30,7 @@ class BearingEstimator:
         print("Caluclating bearing")
         ret = estimate_bearingResponse()
         ret.detected = True
-        ret.bearing = 1.47
+        ret.bearing = np.random.rand()*2*np.pi
         return ret
 
 
