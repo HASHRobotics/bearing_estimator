@@ -3,7 +3,6 @@
     <arg name="pan" /> -->
 
     <node pkg="bearing_estimator" type="bearing_estimator_node.py" name="bearing_estimator_node">
-        <!-- <param name="camera" value="$(arg camera)"/>
-        <param name="pan" value="$(arg pan)"/> -->
+        <rosparam command="load" file="$(find bearing_estimator)/config/params.yaml" />
     </node>
 </launch>

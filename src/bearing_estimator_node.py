@@ -12,13 +12,21 @@ import numpy as np
 class BearingEstimator:
     def __init__(self):
 
+        # OpenCV bridge to convert ROS image to openCV image.
         self.bridge = CvBridge()
         self.img = []
 
+        # Fetch the thresholds for HSV filtering
+        self.hsv_min = rospy.get_param("/bearing_estimator_node/hsv_min")
+        self.hsv_max = rospy.get_param("/bearing_estimator_node/hsv_max")
+
+        # Define the ROS Service to estimate bearing
         s = rospy.Service('estimate_bearing', 
                             estimate_bearing, 
                             self.handle_estimate_bearing)
 
+        # Initiate the subscriber for the Point Grey Camera images
+        # TODO: Get the image topic from a config file.
         rospy.Subscriber("/camera/image_raw", 
                                     Image, 
                                     self.image_loader)
@@ -29,11 +37,15 @@ class BearingEstimator:
     def handle_estimate_bearing(self, req):
         # Include CV bearing calculations
         print("Caluclating bearing")
+        
+        # Form the estimate_bearing service return value
         ret = estimate_bearingResponse()
         current_bearing = bearing_msg()
         current_bearing.bearing = np.random.rand()*2*np.pi
         ret.detected = True
         ret.bearing = current_bearing
+        
+        # Retrurn the value
         return ret
 
 
