@@ -15,25 +15,27 @@ class BearingEstimator:
         self.bridge = CvBridge()
         self.img = []
 
-        s = rospy.Service('estimate_bearing', 
-                            estimate_bearing, 
+        s = rospy.Service('estimate_bearing',
+                            estimate_bearing,
                             self.handle_estimate_bearing)
 
-        rospy.Subscriber("/camera/image_raw", 
-                                    Image, 
+        rospy.Subscriber("/camera/image_raw",
+                                    Image,
                                     self.image_loader)
+        self.pub = rospy.Publisher('/bearing', bearing_msg, queue_size=10)
 
     def image_loader(self,msg):
         self.img = self.bridge.imgmsg_to_cv2(msg, desired_encoding="passthrough")
 
     def handle_estimate_bearing(self, req):
         # Include CV bearing calculations
-        print("Caluclating bearing")
+        print("Calculating bearing")
         ret = estimate_bearingResponse()
         current_bearing = bearing_msg()
         current_bearing.bearing = np.random.rand()*2*np.pi
         ret.detected = True
         ret.bearing = current_bearing
+        self.pub.publish(current_bearing)
         return ret
 
 
