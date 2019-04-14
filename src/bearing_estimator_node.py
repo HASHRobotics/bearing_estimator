@@ -32,7 +32,7 @@ class BearingEstimator:
         print("Calculating bearing")
         ret = estimate_bearingResponse()
         current_bearing = bearing_msg()
-        current_bearing.bearing = np.random.rand()*2*np.pi
+        current_bearing.bearing = np.pi/2
         ret.detected = True
         ret.bearing = current_bearing
         self.pub.publish(current_bearing)
