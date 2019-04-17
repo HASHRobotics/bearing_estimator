@@ -69,6 +69,7 @@ class RangeEstimator:
         else:
             ret.detected = True
         current_range.range = 1
+        current_range.header.stamp = rospy.get_rostime()
         ret.range = current_range
         self.pub.publish(current_range)
         return ret

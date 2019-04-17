@@ -33,6 +33,7 @@ class BearingEstimator:
         ret = estimate_bearingResponse()
         current_bearing = bearing_msg()
         current_bearing.bearing = np.pi/2
+        current_bearing.header.stamp = rospy.get_rostime()
         ret.detected = True
         ret.bearing = current_bearing
         self.pub.publish(current_bearing)
