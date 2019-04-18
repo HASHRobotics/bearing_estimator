@@ -107,7 +107,7 @@ if __name__ == "__main__":
 		# Instatiated the class
 		NC = BearingEstimator()
 
-        # Wait
-        rospy.spin()
-    except rospy.ROSInterruptException:
-        pass
+		# Wait
+		rospy.spin()
+	except rospy.ROSInterruptException:
+		pass
