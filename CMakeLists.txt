@@ -67,7 +67,8 @@ add_message_files(
 add_service_files(
   FILES
   estimate_bearing.srv
-  get_range.srv
+  estimate_range.srv
+  ground_truth_range.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -165,7 +166,7 @@ include_directories(
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-#target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} 
+#target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES}
 #${OpenCV_LIBS} ${OpenCV_LIBRARIES})
 #
 
