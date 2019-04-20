@@ -69,6 +69,7 @@ add_service_files(
   estimate_bearing.srv
   estimate_range.srv
   ground_truth_range.srv
+  ground_truth_bearing.srv
 )
 
 ## Generate actions in the 'action' folder

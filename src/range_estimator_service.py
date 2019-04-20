@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 import rospy
 from sensor_msgs.msg import Range
-from bearing_estimator.srv import estimate_range, ground_truth_range, get_rangeResponse
+from bearing_estimator.srv import estimate_range, ground_truth_range, ground_truth_rangeResponse, estimate_rangeResponse
 
 class RangeEstimator:
     def __init__(self):
-        self.distance = None
         rospy.Service('estimate_range',
                         estimate_range,
                         self.handle_estimate_range)
@@ -36,7 +35,7 @@ class RangeEstimator:
             self.true_distance = msg.range
 
     def handle_ground_truth_range(self, req):
-        ret = get_rangeResponse()
+        ret = ground_truth_rangeResponse()
         if self.true_distance == None:
             ret.detected = False
         else:
@@ -50,7 +49,7 @@ class RangeEstimator:
 
 
     def handle_estimate_range(self, req):
-        ret = get_rangeResponse()
+        ret = estimate_rangeResponse()
         if self.estimated_distance == None:
             ret.detected = False
         else:
