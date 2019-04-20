@@ -1,14 +1,7 @@
 #!/usr/bin/env python
 import rospy
-import time
-import serial
-from std_msgs.msg import String
 from sensor_msgs.msg import Range
-
-from collections import deque
-
 from bearing_estimator.srv import estimate_range, ground_truth_range, get_rangeResponse
-from nav_msgs.msgs import Odometry
 
 class RangeEstimator:
     def __init__(self):
@@ -30,7 +23,9 @@ class RangeEstimator:
                             self.set_rtk_range)
 
         self.estimated_pub = rospy.Publisher('estimated_range', Range, queue_size=10)
+
         self.true_pub = rospy.Publisher('true_range', Range, queue_size=10)
+
         self.true_distance = None
         self.estimated_distance = None
 
