@@ -14,7 +14,7 @@ class BearingEstimator:
 
         self.bridge = CvBridge()
         self.img = []
-        self.name = rospy.get_param("name")
+        #self.name = rospy.get_param("name")
 
         rospy.Service('estimate_bearing',
                             estimate_bearing,
