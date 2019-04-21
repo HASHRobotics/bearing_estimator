@@ -2,7 +2,7 @@
     <!-- <arg name="camera" />
     <arg name="pan" /> -->
 
-    <node pkg="bearing_estimator" type="range_estimator_node.py" name="range_estimator_node">
+    <node pkg="bearing_estimator" type="range_estimator_service.py" name="range_estimator_node">
         <!-- <param name="camera" value="$(arg camera)"/>
         <param name="pan" value="$(arg pan)"/> -->
     </node>
