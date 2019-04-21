@@ -72,7 +72,6 @@ class BearingEstimator:
 		image_msg = rospy.wait_for_message("/camera/image_color", Image)
 
 		self.img = self.bridge.imgmsg_to_cv2(image_msg, desired_encoding="passthrough")
-
 		new_height, new_width, channels = self.img.shape
 		self.new_height = 600
 		self.new_width = 900
@@ -90,14 +89,10 @@ class BearingEstimator:
 		self.img = self.img.astype("uint8")
 
 		output = self.img
-		COLOR_MIN = np.array([70,25,0], np.uint8)
-		COLOR_MAX = np.array([90,255,255], np.uint8)
-
+		COLOR_MIN = np.array([self.hue_min,30,0], np.uint8)
+		COLOR_MAX = np.array([self.hue_max,255,255], np.uint8)
 		output = cv2.cvtColor(output, cv2.COLOR_BGR2HSV)
-
 		frame_threshed = cv2.inRange(output, COLOR_MIN, COLOR_MAX)
-
-
 		frame_threshed = frame_threshed/255.0
 		struct1 = np.array([[1,1,1],[1,1,1],[1,1,1]])
 		# struct1 = np.array([[0,1,0],[1,1,1],[0,1,0]])
@@ -105,22 +100,16 @@ class BearingEstimator:
 		# frame_threshed = scipy.ndimage.morphology.binary_dilation(frame_threshed, iterations = 3 )
 		frame_threshed = frame_threshed*255.0
 		frame_threshed = frame_threshed.astype("uint8")
-
-		# cv2.rectangle(self.img,(x,y),(x+w,y+h),(0,255,0),2)
-		cv2.imwrite(''+str(self.counter)+'.jpg', frame_threshed)
+		cv2.imwrite(''+str(self.counter)+'.jpg', frame_threshed) 
 
 		im2, contours = cv2.findContours(frame_threshed, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
-
 		if (len(contours) == 0):
 			stro = "No contour detected for image"
-
 		contours = self.get_good_contours(im2, new_width, new_height)
-		print("contour", contours)
-
 		if (len(contours) == 0):
 			stro = "No Good contour detected for image"
-		print("here")
+		
+
 		# Detecting max contour & making sure it is bigger than a threshold
 		print(len(contours))
 		if (len(contours) > 0):
@@ -132,7 +121,6 @@ class BearingEstimator:
 			print(stro)
 			self.cX = int(x + (w / 2))
 			self.cY = int(y + (h / 2))
-				# print("centroid",self.cX,self.cY)
 		   #CHANGE THIS PATH AS PER THE USE
 			cv2.rectangle(self.img,(x,y),(x+w,y+h),(0,255,0),2)
 			cv2.imwrite(''+str(self.counter)+'bb'+'.jpg', self.img)
