@@ -13,7 +13,7 @@ class RangeEstimator:
                         ground_truth_range,
                         self.handle_ground_truth_range)
 
-        rospy.Subscriber("estimate_range",
+        rospy.Subscriber("estimated_range",
                             Range,
                             self.set_estimated_distance)
 
@@ -21,7 +21,7 @@ class RangeEstimator:
                             Range,
                             self.set_rtk_range)
 
-        self.estimated_pub = rospy.Publisher('estimated_range', Range, queue_size=10)
+        self.sampled_range_pub = rospy.Publisher('sampled_range', Range, queue_size=10)
 
         self.true_pub = rospy.Publisher('true_range', Range, queue_size=10)
 
@@ -59,7 +59,7 @@ class RangeEstimator:
         current_estimated_range = Range()
         current_estimated_range.range = self.estimated_distance
         current_estimated_range.header.stamp = rospy.get_rostime()
-        self.estimated_pub.publish(current_estimated_range)
+        self.sampled_range_pub.publish(current_estimated_range)
 
         return ret
 
