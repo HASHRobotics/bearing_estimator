@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from std_msgs.msg import Bool, Float32, String
+import math
 import rospy
 import time
 import cv2
@@ -18,14 +19,20 @@ class BearingEstimator:
                             self.handle_ground_truth_bearing)
 
         rospy.Subscriber("/piksi/enu_pose_fix",PoseWithCovariance, self.calculate_rtk_bearing)
+
+        pose_msg  = rospy.wait_for_message("/piksi/enu_pose_fix", PoseWithCovariance)
+        self.base_station_x = pose_msg.pose.position.x
+        self.base_station_y = pose_msg.pose.position.y
+        self.compass_angle = 0
         self.pub = rospy.Publisher('/rtk_bearing', bearing_msg, queue_size=10)
         self.stationary_rover_to_base_station = np.eye(4)
         self.true_bearing = 0
 
     def calculate_rtk_bearing(self, msg):
-        point = np.array([msg.pose.position.x, msg.pose.position.y, msg.pose.positon.z, 1]).T
-        transformed_point = np.matmul(self.stationary_rover_to_base_station, point)
-        bearing = math.atan2(transformed_point[2]/transformed_point[1])
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        angle = math.atan2(self.base_station_x-x, self.base_station_y-y)
+        bearing = angle - self.compass_angle
         self.true_bearing = bearing
 
     def handle_ground_truth_bearing(self, req):
@@ -40,7 +47,6 @@ class BearingEstimator:
         current_true_bearing.bearing = self.true_bearing
         current_true_bearing.header.stamp = rospy.get_rostime()
         self.pub.publish(current_true_bearing)
-
 
 if __name__ == "__main__":
     try:
