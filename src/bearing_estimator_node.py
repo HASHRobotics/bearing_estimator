@@ -14,7 +14,7 @@ import scipy.ndimage
 class BearingEstimator:
 	def __init__(self):
 
-        #self.name = rospy.get_param("name")
+		#self.name = rospy.get_param("name")
 		self.bridge = CvBridge()
 		self.img = []
 		self.centroid_detected = False
@@ -29,12 +29,12 @@ class BearingEstimator:
 							estimate_bearing,
 							self.handle_estimate_bearing)
 
-        self.pub = rospy.Publisher('/bearing{0}'.format(self.name), bearing_msg, queue_size=10)
+		self.pub = rospy.Publisher('/bearing{0}'.format(self.name), bearing_msg, queue_size=10)
 
 
 		# rospy.Subscriber("/camera/image_color",
-		# 							Image,
-		# 							self.image_loader)
+		#                           Image,
+		#                           self.image_loader)
 
 	def get_good_contours(self, c, new_width, new_height):
 		'''
@@ -46,7 +46,7 @@ class BearingEstimator:
 			# rightmost = tuple(elt[elt[:,:, 0].argmax()][0])
 			# topmost = tuple(elt[elt[:,:, 1].argmin()][0])
 			# if ((topmost[1] > 3 * new_height / 10 and topmost[1] < 7 * new_height / 10) and (rightmost[0] > (0.4 * new_width))):
-			# 	l.append(elt)
+			#   l.append(elt)
 			l.append(elt)
 		return l
 
@@ -147,7 +147,7 @@ class BearingEstimator:
 				ret.detected = True
 				ret.bearing = current_bearing
 				print("BEARING",current_bearing)
-                self.pub.publish(current_bearing)
+				self.pub.publish(current_bearing)
 			return ret
 
 if __name__ == "__main__":
