@@ -60,9 +60,9 @@ class RangeEstimator:
             self.estimated_distance = 0
         else:
             current_estimated_range.range = self.estimated_distance
-#	h = std_msgs.msg.Header()
-#	h.stamp = rospy.Time.now()
- #       current_estimated_range.header = h
+	h = std_msgs.msg.Header()
+	h.stamp = rospy.Time.now()
+        current_estimated_range.header = h
         self.estimated_pub.publish(current_estimated_range)
         ret.range = current_estimated_range	
         return ret
