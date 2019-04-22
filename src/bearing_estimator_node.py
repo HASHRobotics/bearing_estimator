@@ -70,6 +70,7 @@ class BearingEstimator:
 		#image loader and centroid estimation
 		self.counter += 1
 		image_msg = rospy.wait_for_message("/camera/image_color", Image)
+	
 
 		self.img = self.bridge.imgmsg_to_cv2(image_msg, desired_encoding="passthrough")
 		new_height, new_width, channels = self.img.shape
@@ -102,27 +103,24 @@ class BearingEstimator:
 		frame_threshed = frame_threshed.astype("uint8")
 		cv2.imwrite(''+str(self.counter)+'.jpg', frame_threshed) 
 
-		im2, contours = cv2.findContours(frame_threshed, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+		im2, contours, heirarchy = cv2.findContours(frame_threshed, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 		if (len(contours) == 0):
-			ROSINFO("No contour detected for image")
+			rospy.logwarn("No contour detected for image")
 
-
+		
 		else:
-			contours = self.get_good_contours(im2, new_width, new_height)
+			#contours = self.get_good_contours(im2, new_width, new_height)
 			if (len(contours) == 0):
-				ROSINFO("No Good contour detected for image")
+				rospy.logwarn("No Good contour detected for image")
 
-			
 
 # Detecting max contour & making sure it is bigger than a threshold
 			print(len(contours))
 			if (len(contours) > 0):
 				c = max(contours, key=cv2.contourArea)
-				print("len > 0")
 				# if not cv2.contourArea(c) < 0:
-				stro = "Detected contours"
+				rospy.loginfo("Detected contours")
 				x,y,w,h = cv2.boundingRect(c)
-				print(stro)
 				self.cX = int(x + (w / 2))
 				self.cY = int(y + (h / 2))
 #CHANGE THIS PATH AS PER THE USE
@@ -131,19 +129,20 @@ class BearingEstimator:
 
 # Include CV bearing calculations
 				print("Caluclating bearing")
-				ret = estimate_bearingResponse()
+
 				current_bearing = bearing_msg()
 				if (self.cY and self.cX):
 					current_bearing.bearing = np.arctan2([self.new_height/2 - self.cY],[self.cX - self.new_width/2]) *(180.0/3.14)
+					ret = estimate_bearingResponse()
 					ret.detected = True
 					ret.bearing = current_bearing
 					print("BEARING",current_bearing)
 					self.pub.publish(current_bearing)
 					return ret
 
-
+		ret = estimate_bearingResponse()
 		ret.detected = False
-		ret.bearing = 0
+		#ret.bearing = 0
 		return ret
 
 
