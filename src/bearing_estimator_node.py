@@ -29,7 +29,7 @@ class BearingEstimator:
 							estimate_bearing,
 							self.handle_estimate_bearing)
 
-		self.pub = rospy.Publisher('/bearing{0}'.format(self.name), bearing_msg, queue_size=10)
+		self.pub = rospy.Publisher('/bearing', bearing_msg, queue_size=10)
 
 
 		# rospy.Subscriber("/camera/image_color",
@@ -104,39 +104,48 @@ class BearingEstimator:
 
 		im2, contours = cv2.findContours(frame_threshed, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 		if (len(contours) == 0):
-			stro = "No contour detected for image"
-		contours = self.get_good_contours(im2, new_width, new_height)
-		if (len(contours) == 0):
-			stro = "No Good contour detected for image"
-		
+			ROSINFO("No contour detected for image")
 
-		# Detecting max contour & making sure it is bigger than a threshold
-		print(len(contours))
-		if (len(contours) > 0):
-			c = max(contours, key=cv2.contourArea)
-			print("len > 0")
-			# if not cv2.contourArea(c) < 0:
-			stro = "Detected contours"
-			x,y,w,h = cv2.boundingRect(c)
-			print(stro)
-			self.cX = int(x + (w / 2))
-			self.cY = int(y + (h / 2))
-		   #CHANGE THIS PATH AS PER THE USE
-			cv2.rectangle(self.img,(x,y),(x+w,y+h),(0,255,0),2)
-			cv2.imwrite(''+str(self.counter)+'bb'+'.jpg', self.img)
 
-			# Include CV bearing calculations
-			print("Caluclating bearing")
-			ret = estimate_bearingResponse()
-			current_bearing = bearing_msg()
-			if (self.cY and self.cX):
-				current_bearing.bearing = np.arctan2([self.new_height/2 - self.cY],[self.cX - self.new_width/2]) *(180.0/3.14)
+		else:
+			contours = self.get_good_contours(im2, new_width, new_height)
+			if (len(contours) == 0):
+				ROSINFO("No Good contour detected for image")
 
-				ret.detected = True
-				ret.bearing = current_bearing
-				print("BEARING",current_bearing)
-				self.pub.publish(current_bearing)
-			return ret
+			
+
+# Detecting max contour & making sure it is bigger than a threshold
+			print(len(contours))
+			if (len(contours) > 0):
+				c = max(contours, key=cv2.contourArea)
+				print("len > 0")
+				# if not cv2.contourArea(c) < 0:
+				stro = "Detected contours"
+				x,y,w,h = cv2.boundingRect(c)
+				print(stro)
+				self.cX = int(x + (w / 2))
+				self.cY = int(y + (h / 2))
+#CHANGE THIS PATH AS PER THE USE
+				cv2.rectangle(self.img,(x,y),(x+w,y+h),(0,255,0),2)
+				cv2.imwrite(''+str(self.counter)+'bb'+'.jpg', self.img)
+
+# Include CV bearing calculations
+				print("Caluclating bearing")
+				ret = estimate_bearingResponse()
+				current_bearing = bearing_msg()
+				if (self.cY and self.cX):
+					current_bearing.bearing = np.arctan2([self.new_height/2 - self.cY],[self.cX - self.new_width/2]) *(180.0/3.14)
+					ret.detected = True
+					ret.bearing = current_bearing
+					print("BEARING",current_bearing)
+					self.pub.publish(current_bearing)
+					return ret
+
+
+		ret.detected = False
+		ret.bearing = 0
+		return ret
+
 
 if __name__ == "__main__":
 	try:
