@@ -133,6 +133,7 @@ class BearingEstimator:
 				current_bearing = bearing_msg()
 				if (self.cY and self.cX):
 					current_bearing.bearing = np.arctan2([self.new_height/2 - self.cY],[self.cX - self.new_width/2]) *(180.0/3.14)
+					current_bearing.header.stamp = rospy.get_rostime()					
 					ret = estimate_bearingResponse()
 					ret.detected = True
 					ret.bearing = current_bearing
