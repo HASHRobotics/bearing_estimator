@@ -71,7 +71,7 @@ class BearingEstimator:
 
 	def put_rectangular_mask(self, img, height, width, layer = 3):
 		# print("done")
-		cv2.rectangle(img,(img.shape[1]/2 - width/2,img.shape[0]/2 - height/2),(img.shape[1]/2 + width/2,img.shape[0]/2 + height/2),(0,0,0),3)
+		cv2.rectangle(img,(img.shape[1]/2 - width/2,img.shape[0]/2 - height/2),(img.shape[1]/2 + width/2,img.shape[0]/2 + height/2),(0,0,0),-1)
 
 
 	def handle_estimate_bearing(self, req):
@@ -96,7 +96,7 @@ class BearingEstimator:
 		center_mask = 1 - center_mask
 		self.img = np.multiply(center_mask,self.img)
 		self.img = self.img.astype("uint8")
-		self.put_rectangular_mask(self.img, height = 200 , width = 100 , layer = 3)
+		self.put_rectangular_mask(self.img, height = 400 , width = 300 , layer = 3)
 
 		output = self.img
 		COLOR_MIN = np.array([self.hue_min,30,0], np.uint8)
@@ -113,6 +113,7 @@ class BearingEstimator:
 		cv2.imwrite(''+str(self.counter)+'.jpg', frame_threshed) 
 
 		im2, contours, heirarchy = cv2.findContours(frame_threshed, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+		# im2, contours = cv2.findContours(frame_threshed, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 		if (len(contours) == 0):
 			rospy.logwarn("No contour detected for image")
 
@@ -142,7 +143,7 @@ class BearingEstimator:
 
 				current_bearing = bearing_msg()
 				if (self.cY and self.cX):
-					current_bearing.bearing = np.arctan2([self.new_width/2.0 - self.cX],[ self.new_height/2.0 - self.cY]) *(180.0/3.14)
+					current_bearing.bearing = np.arctan2([self.new_width/2.0 - self.cX],[ self.new_height/2.0 - self.cY]) 
 					current_bearing.header.stamp = rospy.get_rostime()					
 					ret = estimate_bearingResponse()
 					ret.detected = True
@@ -152,7 +153,7 @@ class BearingEstimator:
 					self.file.writerow([str(current_bearing.bearing[0]),self.cX,self.cY])
 					return ret
 		current_bearing = bearing_msg()
-		current_bearing.bearing = np.arctan2([self.new_width/2.0 - self.cX],[ self.new_height/2.0 - self.cY]) *(180.0/3.14)
+		current_bearing.bearing = np.arctan2([self.new_width/2.0 - self.cX],[ self.new_height/2.0 - self.cY]) 
 		current_bearing.header.stamp = rospy.get_rostime()					
 		ret = estimate_bearingResponse()
 		ret.detected = False
