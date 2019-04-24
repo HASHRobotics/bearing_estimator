@@ -3,9 +3,9 @@
     <arg name="pan" /> -->
 
     <node pkg="bearing_estimator" type="bearing_estimator_node.py" name="bearing_estimator_node">
-        <rosparam command="load" file="$(find bearing_estimator)/config/params.yaml" />
-	<param name="hue_min" type="int" value="70" />
-	<param name="hue_max" type="int" value="90" />
+        <! -- <rosparam command="load" file="$(find bearing_estimator)/config/params.yaml" /> -->
+	<param name="hue_min" type="int" value="80" />
+	<param name="hue_max" type="int" value="105" />
     </node>
     
 </launch>
