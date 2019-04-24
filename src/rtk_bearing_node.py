@@ -18,7 +18,7 @@ class BearingEstimator:
                             ground_truth_bearing,
                             self.handle_ground_truth_bearing)
 
-        rospy.Subscriber("/piksi/enu_pose_fix",PoseWithCovariance, self.calculate_rtk_bearing)
+        rospy.Subscriber("/ak2/piksi/enu_pose_fix",PoseWithCovariance, self.calculate_rtk_bearing)
 
         pose_msg  = rospy.wait_for_message("/piksi/enu_pose_fix", PoseWithCovariance)
         self.base_station_x = pose_msg.pose.position.x
