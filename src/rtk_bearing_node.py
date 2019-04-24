@@ -20,10 +20,15 @@ class BearingEstimator:
 
         rospy.Subscriber("/ak2/piksi/enu_pose_fix",PoseWithCovariance, self.calculate_rtk_bearing)
 
-        pose_msg  = rospy.wait_for_message("/piksi/enu_pose_fix", PoseWithCovariance)
-        self.base_station_x = pose_msg.pose.position.x
-        self.base_station_y = pose_msg.pose.position.y
+        # pose_msg  = rospy.wait_for_message("/piksi/enu_pose_fix", PoseWithCovariance)
+        # self.base_station_x = pose_msg.pose.position.x
+        # self.base_station_y = pose_msg.pose.position.y
+        # self.compass_angle = 0
+
+        self.base_station_x = 0
+        self.base_station_y = 0
         self.compass_angle = 0
+
         self.pub = rospy.Publisher('/rtk_bearing', bearing_msg, queue_size=10)
         self.stationary_rover_to_base_station = np.eye(4)
         self.true_bearing = 0
