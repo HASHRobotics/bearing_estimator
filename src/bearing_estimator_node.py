@@ -10,6 +10,7 @@ from bearing_estimator.srv import estimate_bearing, estimate_bearingResponse
 import numpy as np
 import imutils
 import scipy.ndimage
+import csv
 
 class BearingEstimator:
 	def __init__(self):
@@ -30,6 +31,9 @@ class BearingEstimator:
 							self.handle_estimate_bearing)
 
 		self.pub = rospy.Publisher('/bearing', bearing_msg, queue_size=10)
+		self.file = csv.writer(open("centroid.csv","w"), delimiter=',')
+		    # self.file = csv.writer(writeFile)
+		    
 
 
 		# rospy.Subscriber("/camera/image_color",
@@ -65,6 +69,10 @@ class BearingEstimator:
 			mask_[:,:,i] = mask_1
 		return mask_
 
+	def put_rectangular_mask(self, img, height, width, layer = 3):
+		# print("done")
+		cv2.rectangle(img,(img.shape[1]/2 - width/2,img.shape[0]/2 - height/2),(img.shape[1]/2 + width/2,img.shape[0]/2 + height/2),(0,0,0),3)
+
 
 	def handle_estimate_bearing(self, req):
 		#image loader and centroid estimation
@@ -88,6 +96,7 @@ class BearingEstimator:
 		center_mask = 1 - center_mask
 		self.img = np.multiply(center_mask,self.img)
 		self.img = self.img.astype("uint8")
+		self.put_rectangular_mask(self.img, height = 200 , width = 100 , layer = 3)
 
 		output = self.img
 		COLOR_MIN = np.array([self.hue_min,30,0], np.uint8)
@@ -109,7 +118,7 @@ class BearingEstimator:
 
 		
 		else:
-			#contours = self.get_good_contours(im2, new_width, new_height)
+			# contours = self.get_good_contours(im2, new_width, new_height)
 			if (len(contours) == 0):
 				rospy.logwarn("No Good contour detected for image")
 
@@ -124,8 +133,9 @@ class BearingEstimator:
 				self.cX = int(x + (w / 2))
 				self.cY = int(y + (h / 2))
 #CHANGE THIS PATH AS PER THE USE
+				cv2.imwrite(''+str(self.counter)+'originial'+'.jpg', self.img)
 				cv2.rectangle(self.img,(x,y),(x+w,y+h),(0,255,0),2)
-				cv2.imwrite(''+str(self.counter)+'bb'+'.jpg', self.img)
+				cv2.imwrite(''+str(self.counter)+'wbb'+'.jpg', self.img)
 
 # Include CV bearing calculations
 				print("Caluclating bearing")
@@ -139,11 +149,15 @@ class BearingEstimator:
 					ret.bearing = current_bearing
 					print("BEARING",current_bearing)
 					self.pub.publish(current_bearing)
+					self.file.writerow([str(current_bearing.bearing[0]),self.cX,self.cY])
 					return ret
-
+		current_bearing = bearing_msg()
+		current_bearing.bearing = np.arctan2([self.new_width/2.0 - self.cX],[ self.new_height/2.0 - self.cY]) *(180.0/3.14)
+		current_bearing.header.stamp = rospy.get_rostime()					
 		ret = estimate_bearingResponse()
 		ret.detected = False
-		#ret.bearing = 0
+		ret.bearing = 0.0
+		self.file.writerow([str(current_bearing.bearing[0]),self.cX,self.cY])
 		return ret
 
 
