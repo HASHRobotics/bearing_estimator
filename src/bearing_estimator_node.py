@@ -97,7 +97,7 @@ class BearingEstimator:
 		frame_threshed = frame_threshed/255.0
 		struct1 = np.array([[1,1,1],[1,1,1],[1,1,1]])
 		# struct1 = np.array([[0,1,0],[1,1,1],[0,1,0]])
-		frame_threshed = scipy.ndimage.morphology.binary_erosion(frame_threshed, structure = struct1, iterations = 2)
+		frame_threshed = scipy.ndimage.morphology.binary_erosion(frame_threshed, structure = struct1, iterations = 1)
 		# frame_threshed = scipy.ndimage.morphology.binary_dilation(frame_threshed, iterations = 3 )
 		frame_threshed = frame_threshed*255.0
 		frame_threshed = frame_threshed.astype("uint8")
@@ -132,7 +132,7 @@ class BearingEstimator:
 
 				current_bearing = bearing_msg()
 				if (self.cY and self.cX):
-					current_bearing.bearing = np.arctan2([self.new_height/2 - self.cY],[self.cX - self.new_width/2]) *(180.0/3.14)
+					current_bearing.bearing = np.arctan2([self.new_width/2.0 - self.cX],[ self.new_height/2.0 - self.cY]) *(180.0/3.14)
 					current_bearing.header.stamp = rospy.get_rostime()					
 					ret = estimate_bearingResponse()
 					ret.detected = True
