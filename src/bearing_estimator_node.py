@@ -16,6 +16,7 @@ class BearingEstimator:
 	def __init__(self):
 
 		self.namespace = rospy.get_namespace()
+		self.bridge = CvBridge()
 		self.img = []
 		self.centroid_detected = False
 		self.cX = 0
