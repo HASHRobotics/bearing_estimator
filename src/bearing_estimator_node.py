@@ -15,8 +15,7 @@ import csv
 class BearingEstimator:
 	def __init__(self):
 
-		#self.name = rospy.get_param("name")
-		self.bridge = CvBridge()
+		self.namespace = rospy.get_namespace()
 		self.img = []
 		self.centroid_detected = False
 		self.cX = 0
@@ -77,7 +76,7 @@ class BearingEstimator:
 	def handle_estimate_bearing(self, req):
 		#image loader and centroid estimation
 		self.counter += 1
-		image_msg = rospy.wait_for_message("/camera/image_color", Image)
+		image_msg = rospy.wait_for_message(str(self.namespace)+"camera/image_color", Image)
 	
 
 		self.img = self.bridge.imgmsg_to_cv2(image_msg, desired_encoding="passthrough")
@@ -158,7 +157,7 @@ class BearingEstimator:
 		ret = estimate_bearingResponse()
 		ret.detected = False
 		ret.bearing = current_bearing
-		self.file.writerow([str(current_bearing.bearing[0]),self.cX,self.cY])
+		self.file.writerow([str(current_bearing.bearing),self.cX,self.cY])
 		return ret
 
 
