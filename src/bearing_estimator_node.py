@@ -82,7 +82,7 @@ class BearingEstimator:
 
 		self.img = self.bridge.imgmsg_to_cv2(image_msg, desired_encoding="passthrough")
 		new_height, new_width, channels = self.img.shape
-		self.new_height = 600
+		self.new_height = 900
 		self.new_width = 900
 		self.img = imutils.resize(self.img, height=self.new_height, width=self.new_width)
 ##MASK in
@@ -143,7 +143,7 @@ class BearingEstimator:
 
 				current_bearing = bearing_msg()
 				if (self.cY and self.cX):
-					current_bearing.bearing = np.arctan2([self.new_width/2.0 - self.cX],[ self.new_height/2.0 - self.cY]) 
+					current_bearing.bearing = np.arctan2([-self.new_width/2.0 + self.cX],[ self.new_height/2.0 - self.cY]) 
 					current_bearing.header.stamp = rospy.get_rostime()					
 					ret = estimate_bearingResponse()
 					ret.detected = True
