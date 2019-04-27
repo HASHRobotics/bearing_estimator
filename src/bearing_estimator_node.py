@@ -153,11 +153,11 @@ class BearingEstimator:
 					self.file.writerow([str(current_bearing.bearing[0]),self.cX,self.cY])
 					return ret
 		current_bearing = bearing_msg()
-		current_bearing.bearing = np.arctan2([self.new_width/2.0 - self.cX],[ self.new_height/2.0 - self.cY]) 
+		current_bearing.bearing =  0.0 
 		current_bearing.header.stamp = rospy.get_rostime()					
 		ret = estimate_bearingResponse()
 		ret.detected = False
-		ret.bearing = 0.0
+		ret.bearing = current_bearing
 		self.file.writerow([str(current_bearing.bearing[0]),self.cX,self.cY])
 		return ret
 
