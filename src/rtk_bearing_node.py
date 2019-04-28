@@ -35,9 +35,9 @@ class BearingEstimator:
         self.true_bearing = 0
 
     def calculate_rtk_bearing(self, msg):
-        x = msg.n
-        y = msg.e
-        angle = math.atan2(self.base_station_x-x, self.base_station_y-y)
+        x = msg.e
+        y = msg.n
+        angle = math.atan2(x - self.base_station_x, y - self.base_station_y)
         bearing = angle - self.compass_angle
         self.true_bearing = bearing
 
