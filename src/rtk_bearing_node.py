@@ -10,6 +10,7 @@ from bearing_estimator.msg import bearing_msg
 from bearing_estimator.srv import ground_truth_bearing, ground_truth_bearingResponse
 import numpy as np
 from geometry_msgs.msg import PoseWithCovariance
+from piksi_rtk_msgs.msg import BaselineNed
 
 class BearingEstimator:
     def __init__(self):
@@ -18,7 +19,7 @@ class BearingEstimator:
                             ground_truth_bearing,
                             self.handle_ground_truth_bearing)
 
-        rospy.Subscriber("/ak2/piksi/enu_pose_fix",PoseWithCovariance, self.calculate_rtk_bearing)
+        rospy.Subscriber("/ak2/piksi/baseline_ned",BaselineNed, self.calculate_rtk_bearing)
 
         # pose_msg  = rospy.wait_for_message("/piksi/enu_pose_fix", PoseWithCovariance)
         # self.base_station_x = pose_msg.pose.position.x
@@ -34,24 +35,27 @@ class BearingEstimator:
         self.true_bearing = 0
 
     def calculate_rtk_bearing(self, msg):
-        x = msg.pose.position.x
-        y = msg.pose.position.y
+        x = msg.n
+        y = msg.e
         angle = math.atan2(self.base_station_x-x, self.base_station_y-y)
         bearing = angle - self.compass_angle
         self.true_bearing = bearing
 
     def handle_ground_truth_bearing(self, req):
         ret = ground_truth_bearingResponse()
+        print(self.true_bearing)
         if self.true_bearing:
-            ret.detected = False
-        else:
             ret.detected = True
-        ret.bearing = self.true_bearing
+        else:
+            ret.detected = False
 
         current_true_bearing = bearing_msg()
         current_true_bearing.bearing = self.true_bearing
         current_true_bearing.header.stamp = rospy.get_rostime()
         self.pub.publish(current_true_bearing)
+
+        ret.bearing = current_true_bearing
+        return ret
 
 if __name__ == "__main__":
     try:
