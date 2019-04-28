@@ -82,6 +82,7 @@ class BearingEstimator:
 
 		self.img = self.bridge.imgmsg_to_cv2(image_msg, desired_encoding="passthrough")
 		new_height, new_width, channels = self.img.shape
+		cv2.imwrite(''+str(self.counter)+'actual.jpg', self.img) 
 		self.new_height = 900
 		self.new_width = 900
 		self.img = imutils.resize(self.img, height=self.new_height, width=self.new_width)
