@@ -6,8 +6,8 @@ from bearing_estimator.srv import estimate_range, ground_truth_range, ground_tru
 
 class RangeEstimator:
     def __init__(self):
-        self.true_distance = None
-        self.estimated_distance = None
+        self.true_distance = 0
+        self.estimated_distance = 0
         rospy.Service('estimate_range',
                         estimate_range,
                         self.handle_estimate_range)
@@ -36,34 +36,32 @@ class RangeEstimator:
 
     def handle_ground_truth_range(self, req):
         ret = ground_truth_rangeResponse()
-        if self.true_distance == None:
-            ret.detected = False
-        else:
+        if self.true_distance:
             ret.detected = True
-        ret.range = self.true_distance
+        else:
+            ret.detected = False
+
 
         current_true_range = Range()
-        current_true_range.range = self.real_distance
+        current_true_range.range = self.true_distance
         current_true_range.header.stamp = rospy.get_rostime()
         self.true_pub.publish(current_true_range)
 
+        ret.range = current_true_range
+        return ret
 
     def handle_estimate_range(self, req):
         ret = estimate_rangeResponse()
-        if self.estimated_distance == None:
-            ret.detected = False
-        else:
+        if self.estimated_distance:
             ret.detected = True
+        else:
+            ret.detected = False
 
         current_estimated_range = Range()
-        if(self.estimated_distance == None):
-            self.estimated_distance = 0
-        else:
-            current_estimated_range.range = self.estimated_distance
-        h = std_msgs.msg.Header()
-        h.stamp = rospy.Time.now()
-        current_estimated_range.header = h
+        current_estimated_range.range = self.estimated_distance
+        current_estimated_range.header.stamp = rospy.Time.now()
         self.sampled_range_pub.publish(current_estimated_range)
+
         ret.range = current_estimated_range
         return ret
 
