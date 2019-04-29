@@ -11,10 +11,14 @@ import numpy as np
 import imutils
 import scipy.ndimage
 import csv
+import os
+from datetime import datetime
 
 class BearingEstimator:
 	def __init__(self):
-
+		self.dirName = "image_log/"+datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+		rospy.logwarn("Making image save directory at "+self.dirName)
+		os.makedirs(self.dirName)
 		self.namespace = rospy.get_namespace()
 		self.bridge = CvBridge()
 		self.img = []
@@ -77,12 +81,13 @@ class BearingEstimator:
 	def handle_estimate_bearing(self, req):
 		#image loader and centroid estimation
 		self.counter += 1
+		rospy.logwarn(str(self.namespace))
 		image_msg = rospy.wait_for_message(str(self.namespace)+"camera/image_color", Image)
 	
 
 		self.img = self.bridge.imgmsg_to_cv2(image_msg, desired_encoding="passthrough")
 		new_height, new_width, channels = self.img.shape
-		cv2.imwrite(''+str(self.counter)+'actual.jpg', self.img) 
+		cv2.imwrite(self.dirName+'/'+str(self.counter)+'actual.jpg', self.img) 
 		self.new_height = 900
 		self.new_width = 900
 		self.img = imutils.resize(self.img, height=self.new_height, width=self.new_width)
@@ -111,7 +116,7 @@ class BearingEstimator:
 		# frame_threshed = scipy.ndimage.morphology.binary_dilation(frame_threshed, iterations = 3 )
 		frame_threshed = frame_threshed*255.0
 		frame_threshed = frame_threshed.astype("uint8")
-		cv2.imwrite(''+str(self.counter)+'.jpg', frame_threshed) 
+		cv2.imwrite(self.dirName+'/'+str(self.counter)+'.jpg', frame_threshed) 
 
 		im2, contours, heirarchy = cv2.findContours(frame_threshed, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 		# im2, contours = cv2.findContours(frame_threshed, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -135,9 +140,9 @@ class BearingEstimator:
 				self.cX = int(x + (w / 2))
 				self.cY = int(y + (h / 2))
 #CHANGE THIS PATH AS PER THE USE
-				cv2.imwrite(''+str(self.counter)+'originial'+'.jpg', self.img)
+				cv2.imwrite(self.dirName+'/'+str(self.counter)+'originial'+'.jpg', self.img)
 				cv2.rectangle(self.img,(x,y),(x+w,y+h),(0,255,0),2)
-				cv2.imwrite(''+str(self.counter)+'wbb'+'.jpg', self.img)
+				cv2.imwrite(self.dirName+'/'+str(self.counter)+'wbb'+'.jpg', self.img)
 
 # Include CV bearing calculations
 				print("Caluclating bearing")
