@@ -82,8 +82,10 @@ class BearingEstimator:
 		#image loader and centroid estimation
 		self.counter += 1
 		rospy.logwarn(str(self.namespace))
-		image_msg = rospy.wait_for_message(str(self.namespace)+"camera/image_color", Image)
-	
+		image_msg = rospy.wait_for_message(str(self.namespace)+"camera/image_color", Image, 30)
+
+		
+		rospy.logwarn("Image acquired")
 
 		self.img = self.bridge.imgmsg_to_cv2(image_msg, desired_encoding="passthrough")
 		new_height, new_width, channels = self.img.shape
@@ -98,7 +100,7 @@ class BearingEstimator:
 		self.img = self.img.astype("uint8")
 
 #Mask Out
-		center_mask = self.circular_mask(350,new_height, new_width, 3)
+		center_mask = self.circular_mask(400,new_height, new_width, 3)
 		center_mask = 1 - center_mask
 		self.img = np.multiply(center_mask,self.img)
 		self.img = self.img.astype("uint8")
@@ -149,7 +151,7 @@ class BearingEstimator:
 
 				current_bearing = bearing_msg()
 				if (self.cY and self.cX):
-					current_bearing.bearing = np.arctan2([-self.new_width/2.0 + self.cX],[ self.new_height/2.0 - self.cY]) 
+					current_bearing.bearing = -1 *  np.arctan2([-self.new_width/2.0 + self.cX],[ self.new_height/2.0 - self.cY]) 
 					current_bearing.header.stamp = rospy.get_rostime()					
 					ret = estimate_bearingResponse()
 					ret.detected = True
